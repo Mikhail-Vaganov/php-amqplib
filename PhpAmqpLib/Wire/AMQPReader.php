@@ -1,4 +1,5 @@
 <?php
+
 namespace PhpAmqpLib\Wire;
 
 use PhpAmqpLib\Exception\AMQPInvalidArgumentException;
@@ -173,7 +174,7 @@ class AMQPReader extends AbstractClient
      */
     public function read_bit()
     {
-        if (!$this->bitcount) {
+        if (empty($this->bitcount)) {
             $this->bits = ord($this->rawread(1));
             $this->bitcount = 8;
         }
@@ -245,7 +246,7 @@ class AMQPReader extends AbstractClient
         list(, $res) = unpack('N', $this->rawread(4));
 
         if ($this->is64bits) {
-            return (int) sprintf('%u', $res);
+            return (int)sprintf('%u', $res);
         }
 
         return $res;
@@ -262,7 +263,7 @@ class AMQPReader extends AbstractClient
         $this->bitcount = $this->bits = 0;
         list(, $res) = unpack('N', $this->rawread(4));
 
-        return !$this->is64bits && self::getLongMSB($res) ? sprintf('%u', $res) : $res;
+        return empty($this->is64bits) && self::getLongMSB($res) ? sprintf('%u', $res) : $res;
     }
 
     /**
@@ -290,7 +291,7 @@ class AMQPReader extends AbstractClient
         list(, $hi, $lo) = unpack('N2', $this->rawread(8));
         $msb = self::getLongMSB($hi);
 
-        if (!$this->is64bits) {
+        if (empty($this->is64bits)) {
             if ($msb) {
                 $hi = sprintf('%u', $hi);
             }
@@ -324,7 +325,7 @@ class AMQPReader extends AbstractClient
      */
     private static function getLongMSB($longInt)
     {
-        return (bool) ($longInt & 0x80000000);
+        return (bool)($longInt & 0x80000000);
     }
 
     /**
